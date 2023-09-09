@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Getter
-@RequiredArgsConstructor
 public class Reservation {
 
     @Setter
@@ -23,4 +22,8 @@ public class Reservation {
     @Setter
     private List<LocalDate> reservationDates;
 
+    public Reservation(String clientFullName, List<LocalDate> reservationDates) {
+        this.clientFullName = clientFullName;
+        this.reservationDates = reservationDates;
+    }
 }
