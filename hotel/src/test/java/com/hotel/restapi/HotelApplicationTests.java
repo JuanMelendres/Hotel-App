@@ -1,4 +1,4 @@
-package com.hotel.hotel;
+package com.hotel.restapi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
