@@ -74,7 +74,7 @@ public class ReservationController {
                 log.info("Successfully get Reservation with id: {}", id);
                 return new ResponseEntity<>(reservation, HttpStatus.OK);
             } else {
-                log.error("Reservation with id: {} not found", id);
+                log.warn("Reservation with id: {} not found", id);
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
@@ -84,12 +84,20 @@ public class ReservationController {
 
     }
 
+    @Operation(
+            summary = "Create a new Reservation",
+            description = "Create a Reservation object. The response is Reservation object with id, " +
+                    "client name, reservation dates and room number.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = Reservation.class),
+                    mediaType = "application/json") }),
+            @ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
     @PostMapping("/reservation")
     public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservation) {
         try {
             Reservation _reservation = reservationService
                     .save(new Reservation(reservation.getClientFullName(), reservation.getReservationDates()));
-            log.info("Successfully created Reservation with id: {}", _reservation.getId());
+            log.info("Successfully created new Reservation");
             return new ResponseEntity<>(_reservation, HttpStatus.CREATED);
         } catch (Exception e) {
             log.error("Error: {}", e.toString());
@@ -97,20 +105,51 @@ public class ReservationController {
         }
     }
 
+    @Operation(
+            summary = "Update a Reservation by Id",
+            description = "Update a Reservation object by specifying its id. The response is Reservation object with id, " +
+                    "client name, reservation dates and room number.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = Reservation.class),
+                    mediaType = "application/json") }),
+            @ApiResponse(responseCode = "406", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
     @PutMapping("/reservation/{id}")
     public ResponseEntity<Reservation> updateReservation(@PathVariable("id") long id, @RequestBody Reservation reservation) {
-        Reservation _reservation = reservationService.findById(id);
+        try {
+            Reservation _reservation = reservationService.findById(id);
 
-        if (_reservation != null) {
-            _reservation.setClientFullName(reservation.getClientFullName());
-            _reservation.setReservationDates(reservation.getReservationDates());
-            log.info("Successfully updated Reservation with id: {}", _reservation.getId());
-            return new ResponseEntity<>( reservationService.save(_reservation), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            if (_reservation != null) {
+                _reservation.setClientFullName(reservation.getClientFullName());
+                _reservation.setReservationDates(reservation.getReservationDates());
+                _reservation.setRoomNumber(reservation.getRoomNumber());
+
+                Reservation update = reservationService.save(_reservation);
+
+                if (update != null) {
+                    log.info("Successfully updated Reservation with id: {}", id);
+                    return new ResponseEntity<>( reservationService.save(_reservation), HttpStatus.OK);
+                }
+                else {
+                    log.warn("Room number: {} is already in use for reservation dates: {}", reservation.getRoomNumber(), reservation.getReservationDates());
+                    return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+                }
+            } else {
+                log.info("Not found Reservation with id: {}", id);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            log.error("Error: {}", e.toString());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @Operation(
+            summary = "Delete a Reservation by Id",
+            description = "Delete a Reservation object by specifying its id.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
     @DeleteMapping("/reservation/{id}")
     public ResponseEntity<HttpStatus> deleteReservation(@PathVariable("id") long id) {
         try {
@@ -123,6 +162,12 @@ public class ReservationController {
         }
     }
 
+    @Operation(
+            summary = "Delete all Reservations",
+            description = "Delete all Reservations.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", content = { @Content(schema = @Schema()) }),
+            @ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
     @DeleteMapping("/reservations")
     public ResponseEntity<HttpStatus> deleteAllReservations() {
         try {
