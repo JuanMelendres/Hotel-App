@@ -1,11 +1,9 @@
 package com.hotel.restapi.service;
 
 import com.hotel.restapi.model.Reservation;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -26,8 +24,19 @@ public class ReservationService {
     }
 
     public Reservation save(Reservation reservation) {
-        // update Reservation if already exist
+
+        if (!reservations.isEmpty()) {
+            for (Reservation res : reservations) {
+                if (Objects.equals(res.getRoomNumber(), reservation.getRoomNumber())
+                        && Objects.equals(res.getReservationDates(), reservation.getReservationDates())) {
+                    log.info("Room already in use");
+                    return null;
+                }
+            }
+        }
+
         if (reservation.getId() != null && reservation.getId() != 0) {
+            // update Reservation if already exist
             long _id = reservation.getId();
 
             this.deleteById(_id);
@@ -37,13 +46,12 @@ public class ReservationService {
             return reservation;
         }
         else {
+            // create new Reservation
             reservation.setId(++id);
             reservation.setRoomNumber(++room);
+            reservations.add(reservation);
+            return reservation;
         }
-
-        // create new Reservation
-        reservations.add(reservation);
-        return reservation;
     }
 
     public void deleteById(long id) {
