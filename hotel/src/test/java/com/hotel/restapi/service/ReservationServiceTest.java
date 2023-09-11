@@ -2,7 +2,6 @@ package com.hotel.restapi.service;
 
 import com.hotel.restapi.ConsumerTest;
 import com.hotel.restapi.model.Reservation;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -10,8 +9,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.BDDAssumptions.given;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(MockitoJUnitRunner.class)
