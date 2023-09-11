@@ -1,7 +1,7 @@
 package com.hotel.restapi.controller;
 
 import com.hotel.restapi.model.Reservation;
-import com.hotel.restapi.service.ReservationService;
+import com.hotel.restapi.service.ReservationServiceImpl;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Reservation Controller", description = "Reservation Controller management APIs")
 public class ReservationController {
 
-    private final ReservationService reservationService;
+    private final ReservationServiceImpl reservationService;
 
     @Operation(
             summary = "Retrieve all Reservations",
@@ -46,6 +46,7 @@ public class ReservationController {
         try {
             List<Reservation> reservations = new ArrayList<>(reservationService.findAll());
             if (reservations.isEmpty()) {
+                log.info("Empty Reservations List");
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             log.info("Successfully get all Reservations");

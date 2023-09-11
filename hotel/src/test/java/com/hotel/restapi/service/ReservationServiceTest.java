@@ -15,7 +15,6 @@ import static org.assertj.core.api.BDDAssumptions.given;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(MockitoJUnitRunner.class)
-@Slf4j
 public class ReservationServiceTest extends ConsumerTest {
 
     @InjectMocks
@@ -65,7 +64,6 @@ public class ReservationServiceTest extends ConsumerTest {
         // Then
         assertNotNull(updatedReservation);
         assertEquals(existingReservation.getClientFullName(), updatedReservation.getClientFullName());
-//        assertEquals("LAST_NAME", updatedReservation.getLastName());
     }
 
     @Test
